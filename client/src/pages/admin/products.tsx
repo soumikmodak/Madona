@@ -41,8 +41,7 @@ export default function AdminProducts() {
 
     const res = await fetch('/api/admin/products', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(product),
+      body: formData,
     });
 
     if (res.ok) {
