@@ -11,9 +11,9 @@ export function ProductCard({ product }: ProductCardProps) {
       <img
         src={product.imageUrl}
         alt={product.name}
-        className="w-full h-48 object-cover"
+        className="w-full h-40 sm:h-48 object-cover"
       />
-      <CardContent className="p-4">
+      <CardContent className="p-3 sm:p-4">
         <h3 className="font-semibold text-lg text-[#1F2937]">{product.name}</h3>
         <p className="text-sm text-gray-600 mt-1">{product.description}</p>
         
