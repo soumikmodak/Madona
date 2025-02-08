@@ -15,7 +15,8 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/category/:category" component={Category} />
       <Route path="/search" component={SearchResults} />
-      <Route path="/admin" component={AdminLogin} />
+      <Route path="/admin" exact component={AdminLogin} />
+      <Route path="/admin/products" component={AdminProducts} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -27,7 +27,7 @@ export default function AdminLogin() {
         throw new Error("Invalid credentials");
       }
 
-      setLocation("/admin/products");
+      window.location.href = "/admin/products";
     } catch (error) {
       toast({
         title: "Error",
