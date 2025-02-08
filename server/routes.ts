@@ -9,7 +9,12 @@ export function registerRoutes(app: Express): Server {
   });
 
   app.get("/api/products/category/:category", async (req, res) => {
-    const products = await storage.getProductsByCategory(req.params.category);
+    const { category } = req.params;
+    const { subcategory } = req.query;
+    const products = await storage.getProductsByCategory(
+      category, 
+      subcategory?.toString()
+    );
     res.json(products);
   });
 

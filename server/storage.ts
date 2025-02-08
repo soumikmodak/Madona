@@ -2,7 +2,7 @@ import { type Product, type InsertProduct } from "@shared/schema";
 
 export interface IStorage {
   getAllProducts(): Promise<Product[]>;
-  getProductsByCategory(category: string): Promise<Product[]>;
+  getProductsByCategory(category: string, subcategory?: string): Promise<Product[]>;
   searchProducts(query: string): Promise<Product[]>;
 }
 
@@ -74,17 +74,18 @@ export class MemStorage implements IStorage {
     return this.products;
   }
 
-  async getProductsByCategory(category: string): Promise<Product[]> {
-    return this.products.filter(p => p.category === category);
+  async getProductsByCategory(category: string, subcategory?: string): Promise<Product[]> {
+    return this.products.filter(p => 
+      p.category === category && 
+      (!subcategory || p.subcategory === subcategory)
+    );
   }
 
   async searchProducts(query: string): Promise<Product[]> {
     const lowercaseQuery = query.toLowerCase().trim();
     return this.products.filter(p => 
       p.name.toLowerCase().includes(lowercaseQuery) ||
-      p.description.toLowerCase().includes(lowercaseQuery) ||
-      p.category.toLowerCase().includes(lowercaseQuery) ||
-      p.subcategory.toLowerCase().includes(lowercaseQuery)
+      p.description.toLowerCase().includes(lowercaseQuery)
     );
   }
 }
