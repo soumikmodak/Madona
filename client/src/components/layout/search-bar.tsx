@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "wouter";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -26,6 +27,8 @@ export function SearchBar() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="w-full bg-white/10 border-transparent focus:border-[#FBBF24] pl-10"
+          role="searchbox"
+          aria-label="Search products"
         />
         <div className="absolute left-3 top-1/2 -translate-y-1/2">
           {isLoading ? (
@@ -40,9 +43,9 @@ export function SearchBar() {
         <Card className="absolute top-full mt-2 w-full z-50 max-h-[400px] overflow-auto">
           <div className="p-2">
             {results.map((product) => (
-              <a
+              <Link
                 key={product.id}
-                href={`/product/${product.id}`}
+                href={`/category/${product.category}`}
                 className="block p-2 hover:bg-gray-100 rounded"
               >
                 <div className="flex items-center gap-2">
@@ -56,7 +59,7 @@ export function SearchBar() {
                     <div className="text-sm text-gray-500">${product.finalPrice}</div>
                   </div>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         </Card>
