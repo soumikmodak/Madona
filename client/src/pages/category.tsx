@@ -8,8 +8,9 @@ export default function Category() {
   const [, params] = useRoute("/category/:category");
   const category = params?.category;
 
-  const { data: products, isLoading } = useQuery({
+  const { data: products = [], isLoading } = useQuery({
     queryKey: ['/api/products/category', category],
+    queryFn: () => fetch(`/api/products/category/${category}`).then(res => res.json()),
     enabled: !!category
   });
 
@@ -21,7 +22,11 @@ export default function Category() {
     </div>;
   }
 
-  const subcategories = category ? productCategories[category as keyof typeof productCategories] : [];
+  if (!category) {
+    return <div>Category not found</div>;
+  }
+
+  const subcategories = productCategories[category as keyof typeof productCategories] || [];
 
   return (
     <div className="space-y-6">
