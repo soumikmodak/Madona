@@ -14,8 +14,8 @@ export function registerRoutes(app: Express): Server {
   });
 
   app.get("/api/products/search", async (req, res) => {
-    const query = req.query.q as string;
-    if (!query) {
+    const query = req.query.q?.toString() || '';
+    if (!query.trim()) {
       return res.status(400).json({ message: "Search query required" });
     }
     const products = await storage.searchProducts(query);
