@@ -18,6 +18,9 @@ export class MemStorage implements IStorage {
 
   constructor() {
     this.admins = [];
+    // Initialize the default admin account
+    this.initializeDefaultAdmin();
+
     // Initialize with mock data using stock photos
     this.products = [
       {
@@ -76,6 +79,20 @@ export class MemStorage implements IStorage {
         finalPrice: 899
       }
     ];
+  }
+
+  private async initializeDefaultAdmin() {
+    const defaultAdmin = {
+      username: 'admin',
+      passwordHash: 'admin123'
+    };
+
+    // Only create if no admin exists
+    const existingAdmin = await this.getAdminByUsername(defaultAdmin.username);
+    if (!existingAdmin) {
+      await this.createAdmin(defaultAdmin);
+      console.log('Default admin account created');
+    }
   }
 
   async getAllProducts(): Promise<Product[]> {
