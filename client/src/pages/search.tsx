@@ -2,16 +2,22 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { ProductGrid } from "@/components/product/product-grid";
 import { Skeleton } from "@/components/ui/skeleton";
-import { searchProducts } from "@/lib/products";
+import { type Product } from "@shared/schema";
 
 export default function SearchResults() {
   const [location] = useLocation();
   const searchParams = new URLSearchParams(location.split('?')[1]);
   const query = searchParams.get('q') || '';
 
-  const { data: products = [], isLoading } = useQuery({
+  const { data: products = [], isLoading } = useQuery<Product[]>({
     queryKey: ['/api/products/search', query],
-    queryFn: () => searchProducts(query),
+    queryFn: async () => {
+      const res = await fetch(`/api/products/search?q=${encodeURIComponent(query)}`);
+      if (!res.ok) {
+        throw new Error('Failed to fetch search results');
+      }
+      return res.json();
+    },
     enabled: !!query
   });
 

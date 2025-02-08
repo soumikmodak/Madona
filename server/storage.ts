@@ -79,7 +79,7 @@ export class MemStorage implements IStorage {
   }
 
   async searchProducts(query: string): Promise<Product[]> {
-    const lowercaseQuery = query.toLowerCase();
+    const lowercaseQuery = query.toLowerCase().trim();
     return this.products.filter(p => 
       p.name.toLowerCase().includes(lowercaseQuery) ||
       p.description.toLowerCase().includes(lowercaseQuery) ||
