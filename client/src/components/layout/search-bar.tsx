@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -10,6 +10,7 @@ import { Search, Loader2 } from "lucide-react";
 
 export function SearchBar() {
   const [query, setQuery] = useState("");
+  const [, setLocation] = useLocation();
   const debouncedQuery = useDebounce(query, 300);
 
   const { data: results = [], isLoading } = useQuery<Product[]>({
@@ -18,9 +19,16 @@ export function SearchBar() {
     enabled: debouncedQuery.length > 2
   });
 
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (query.trim()) {
+      setLocation(`/search?q=${encodeURIComponent(query.trim())}`);
+    }
+  };
+
   return (
     <div className="relative">
-      <div className="relative">
+      <form onSubmit={handleSubmit} className="relative">
         <Input
           type="search"
           placeholder="Search products..."
@@ -37,7 +45,7 @@ export function SearchBar() {
             <Search className="h-4 w-4 text-gray-400" />
           )}
         </div>
-      </div>
+      </form>
 
       {debouncedQuery.length > 2 && results.length > 0 && (
         <Card className="absolute top-full mt-2 w-full z-50 max-h-[400px] overflow-auto">
@@ -45,8 +53,9 @@ export function SearchBar() {
             {results.map((product) => (
               <Link
                 key={product.id}
-                href={`/category/${product.category}`}
+                href={`/search?q=${encodeURIComponent(product.name)}`}
                 className="block p-2 hover:bg-gray-100 rounded"
+                onClick={() => setQuery(product.name)}
               >
                 <div className="flex items-center gap-2">
                   <img 
