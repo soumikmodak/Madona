@@ -1,8 +1,12 @@
 import { type Product } from "@shared/schema";
 
 export async function searchProducts(query: string): Promise<Product[]> {
+  if (!query) return [];
   const res = await fetch(`/api/products/search?q=${encodeURIComponent(query)}`);
-  if (!res.ok) throw new Error("Failed to search products");
+  if (!res.ok) {
+    if (res.status === 400) return [];
+    throw new Error("Failed to search products");
+  }
   return res.json();
 }
 
