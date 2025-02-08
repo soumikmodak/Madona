@@ -85,6 +85,15 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  app.post("/api/admin/products", requireAdmin, async (req, res) => {
+    try {
+      const product = await storage.createProduct(req.body);
+      res.json(product);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   app.put("/api/admin/products/:id", requireAdmin, async (req, res) => {
     try {
       const product = await storage.updateProduct(Number(req.params.id), req.body);
