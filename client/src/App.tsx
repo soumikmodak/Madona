@@ -6,6 +6,7 @@ import Navbar from "@/components/layout/navbar";
 import Home from "@/pages/home";
 import Category from "@/pages/category";
 import SearchResults from "@/pages/search";
+import AdminLogin from "@/pages/admin/login";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -14,6 +15,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/category/:category" component={Category} />
       <Route path="/search" component={SearchResults} />
+      <Route path="/admin" component={AdminLogin} />
       <Route component={NotFound} />
     </Switch>
   );

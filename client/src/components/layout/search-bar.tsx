@@ -23,7 +23,13 @@ export function SearchBar() {
     e.preventDefault();
     if (query.trim()) {
       setLocation(`/search?q=${encodeURIComponent(query.trim())}`);
+      setQuery(""); // Clear the search box after submission
     }
+  };
+
+  const handleItemClick = (productName: string) => {
+    setLocation(`/search?q=${encodeURIComponent(productName)}`);
+    setQuery(""); // Clear the search box after selection
   };
 
   return (
@@ -51,11 +57,10 @@ export function SearchBar() {
         <Card className="absolute top-full mt-2 w-full z-50 max-h-[400px] overflow-auto">
           <div className="p-2">
             {results.map((product) => (
-              <Link
+              <button
                 key={product.id}
-                href={`/search?q=${encodeURIComponent(product.name)}`}
-                className="block p-2 hover:bg-gray-100 rounded"
-                onClick={() => setQuery(product.name)}
+                className="w-full text-left block p-2 hover:bg-gray-100 rounded"
+                onClick={() => handleItemClick(product.name)}
               >
                 <div className="flex items-center gap-2">
                   <img 
@@ -68,7 +73,7 @@ export function SearchBar() {
                     <div className="text-sm text-gray-500">${product.finalPrice}</div>
                   </div>
                 </div>
-              </Link>
+              </button>
             ))}
           </div>
         </Card>

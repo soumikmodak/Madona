@@ -1,15 +1,23 @@
-import { type Product, type InsertProduct } from "@shared/schema";
+import { type Product, type InsertProduct, type Admin, type InsertAdmin } from "@shared/schema";
+import bcrypt from "bcryptjs";
 
 export interface IStorage {
   getAllProducts(): Promise<Product[]>;
   getProductsByCategory(category: string, subcategory?: string): Promise<Product[]>;
   searchProducts(query: string): Promise<Product[]>;
+  createProduct(product: InsertProduct): Promise<Product>;
+  updateProduct(id: number, product: Partial<InsertProduct>): Promise<Product>;
+  deleteProduct(id: number): Promise<void>;
+  getAdminByUsername(username: string): Promise<Admin | undefined>;
+  createAdmin(admin: InsertAdmin): Promise<Admin>;
 }
 
 export class MemStorage implements IStorage {
   private products: Product[];
+  private admins: Admin[];
 
   constructor() {
+    this.admins = [];
     // Initialize with mock data using stock photos
     this.products = [
       {
@@ -87,6 +95,48 @@ export class MemStorage implements IStorage {
       p.name.toLowerCase().includes(lowercaseQuery) ||
       p.description.toLowerCase().includes(lowercaseQuery)
     );
+  }
+
+  async createProduct(product: InsertProduct): Promise<Product> {
+    const newProduct = {
+      ...product,
+      id: this.products.length + 1,
+    };
+    this.products.push(newProduct);
+    return newProduct;
+  }
+
+  async updateProduct(id: number, update: Partial<InsertProduct>): Promise<Product> {
+    const index = this.products.findIndex(p => p.id === id);
+    if (index === -1) throw new Error("Product not found");
+
+    this.products[index] = {
+      ...this.products[index],
+      ...update,
+    };
+    return this.products[index];
+  }
+
+  async deleteProduct(id: number): Promise<void> {
+    const index = this.products.findIndex(p => p.id === id);
+    if (index === -1) throw new Error("Product not found");
+    this.products.splice(index, 1);
+  }
+
+  async getAdminByUsername(username: string): Promise<Admin | undefined> {
+    return this.admins.find(a => a.username === username);
+  }
+
+  async createAdmin(admin: InsertAdmin): Promise<Admin> {
+    const passwordHash = await bcrypt.hash(admin.passwordHash, 10);
+    const newAdmin = {
+      id: this.admins.length + 1,
+      username: admin.username,
+      passwordHash,
+      createdAt: new Date().toISOString(),
+    };
+    this.admins.push(newAdmin);
+    return newAdmin;
   }
 }
 
