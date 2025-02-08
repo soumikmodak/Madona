@@ -1,5 +1,5 @@
 [build]
-command = "npm install && npm run build"
+command = "npm install && npm run build && npm start"
 publish = "dist"
 
 env = { NODE_VERSION = "18" }
