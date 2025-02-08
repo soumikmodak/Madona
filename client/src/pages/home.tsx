@@ -1,10 +1,29 @@
+
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { ProductGrid } from "@/components/product/product-grid";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Home() {
-  const { data: products, isLoading } = useQuery({
+  const [sortBy, setSortBy] = useState<string>("default");
+  const { data: products = [], isLoading } = useQuery({
     queryKey: ['/api/products']
+  });
+
+  const sortedProducts = [...products].sort((a, b) => {
+    switch (sortBy) {
+      case "price-asc":
+        return a.finalPrice - b.finalPrice;
+      case "price-desc":
+        return b.finalPrice - a.finalPrice;
+      case "name-asc":
+        return a.name.localeCompare(b.name);
+      case "name-desc":
+        return b.name.localeCompare(a.name);
+      default:
+        return 0;
+    }
   });
 
   if (isLoading) {
@@ -17,8 +36,22 @@ export default function Home() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-4xl font-bold text-[#1F2937]">Featured Products</h1>
-      <ProductGrid products={products} />
+      <div className="flex justify-between items-center">
+        <h1 className="text-4xl font-bold text-[#1F2937]">Featured Products</h1>
+        <Select value={sortBy} onValueChange={setSortBy}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Sort by..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="default">Default</SelectItem>
+            <SelectItem value="price-asc">Price: Low to High</SelectItem>
+            <SelectItem value="price-desc">Price: High to Low</SelectItem>
+            <SelectItem value="name-asc">Name: A to Z</SelectItem>
+            <SelectItem value="name-desc">Name: Z to A</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <ProductGrid products={sortedProducts} />
     </div>
   );
 }
