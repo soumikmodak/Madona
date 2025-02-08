@@ -11,22 +11,33 @@ import { productCategories, type InsertProduct } from "@shared/schema";
 export default function AdminProducts() {
   const [showForm, setShowForm] = useState(false);
   const [category, setCategory] = useState<"furniture" | "electronics">("furniture");
+  const [mrp, setMrp] = useState<number>(0);
+  const [discount, setDiscount] = useState<number>(0);
+  const [finalPrice, setFinalPrice] = useState<number>(0);
   const { data: products, refetch } = useQuery({ queryKey: ['/api/products'] });
+
+  useEffect(() => {
+    if (mrp && discount) {
+      const discounted = mrp - (mrp * discount / 100);
+      setFinalPrice(Math.round(discounted));
+    }
+  }, [mrp, discount]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const imageFile = (e.currentTarget.querySelector('input[type="file"]') as HTMLInputElement).files?.[0];
     
-    const product: InsertProduct = {
-      name: formData.get('name') as string,
-      description: formData.get('description') as string,
-      category,
-      subcategory: formData.get('subcategory') as string,
-      imageUrl: formData.get('imageUrl') as string,
-      mrp: Number(formData.get('mrp')),
-      discount: Number(formData.get('discount')),
-      finalPrice: Number(formData.get('finalPrice')),
-    };
+    if (!imageFile) {
+      alert('Please select an image');
+      return;
+    }
+
+    formData.append('image', imageFile);
+    formData.append('category', category);
+    formData.append('mrp', mrp.toString());
+    formData.append('discount', discount.toString());
+    formData.append('finalPrice', finalPrice.toString());
 
     const res = await fetch('/api/admin/products', {
       method: 'POST',
@@ -75,10 +86,27 @@ export default function AdminProducts() {
                     ))}
                   </SelectContent>
                 </Select>
-                <Input name="imageUrl" placeholder="Image URL" required />
-                <Input name="mrp" type="number" placeholder="MRP" required />
-                <Input name="discount" type="number" placeholder="Discount %" required />
-                <Input name="finalPrice" type="number" placeholder="Final Price" required />
+                <Input type="file" accept="image/*" className="cursor-pointer" required />
+                <Input 
+                  name="mrp" 
+                  type="number" 
+                  placeholder="MRP" 
+                  value={mrp || ''} 
+                  onChange={(e) => setMrp(Number(e.target.value))}
+                  required 
+                />
+                <Input 
+                  name="discount" 
+                  type="number" 
+                  placeholder="Discount %" 
+                  value={discount || ''} 
+                  onChange={(e) => setDiscount(Number(e.target.value))}
+                  required 
+                />
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-500">Final Price:</span>
+                  <span className="font-semibold">${finalPrice}</span>
+                </div>
                 <div className="flex gap-2">
                   <Button type="submit">Create Product</Button>
                   <Button type="button" variant="outline" onClick={() => setShowForm(false)}>

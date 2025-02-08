@@ -3,6 +3,9 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import bcrypt from "bcryptjs";
 import session from "express-session";
+import multer from 'multer';
+
+const upload = multer({ dest: 'uploads/' });
 
 declare module "express-session" {
   interface SessionData {
@@ -76,23 +79,19 @@ export function registerRoutes(app: Express): Server {
     });
   });
 
-  app.post("/api/admin/products", requireAdmin, async (req, res) => {
+  app.post("/api/admin/products", requireAdmin, upload.single('image'), async (req, res) => {
     try {
-      const product = await storage.createProduct(req.body);
+      const imageUrl = `/uploads/${req.file?.filename}`;
+      const product = await storage.createProduct({
+        ...req.body,
+        imageUrl
+      });
       res.json(product);
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
   });
 
-  app.post("/api/admin/products", requireAdmin, async (req, res) => {
-    try {
-      const product = await storage.createProduct(req.body);
-      res.json(product);
-    } catch (error) {
-      res.status(400).json({ message: error.message });
-    }
-  });
 
   app.put("/api/admin/products/:id", requireAdmin, async (req, res) => {
     try {
