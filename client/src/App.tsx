@@ -7,6 +7,7 @@ import Home from "@/pages/home";
 import Category from "@/pages/category";
 import SearchResults from "@/pages/search";
 import AdminLogin from "@/pages/admin/login";
+import AdminProducts from "@/pages/admin/products";
 import NotFound from "@/pages/not-found";
 
 function Router() {
